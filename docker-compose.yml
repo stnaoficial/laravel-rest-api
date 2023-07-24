@@ -1,0 +1,59 @@
+version: "3"
+services:
+
+  wep-app:
+    container_name: wep-app
+    image: wep-app
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "8080:8080"
+    environment:
+      APP_ENV: local # use: production, when production ready.
+      SERVICE_TAGS: dev
+      SERVICE_NAME: web-app
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+      - ./local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - web-network
+
+  web-database:
+    container_name: web-database
+    image: mysql
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      # MYSQL_PASSWORD: ${DB_PASSWORD}
+      # MYSQL_USER: ${DB_USERNAME}
+    volumes:
+      - ./.docker/mysql:/var/lib/mysql
+    networks:
+      - web-network
+
+  web-server:
+    container_name: web-server
+    image: nginx:alpine
+    depends_on:
+      - wep-app
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "80:80"
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
+    networks:
+      - web-network
+
+networks:
+  web-network:
+    driver: bridge

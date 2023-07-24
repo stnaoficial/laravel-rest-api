@@ -1,0 +1,44 @@
+users (user)
+- id
+- user_detail_id
+- name
+- email
+- email_verified_at
+- password
+- rememberToken
+- ...
+- timestamps
+
+user_details (user_detail)
+- id
+- user_id
+- ...
+- timestamps
+
+user_files (user_file)
+- id
+- user_id
+- file_id
+- ...
+- timestamps
+
+files (file)
+- id
+- name
+- type
+- path
+- ...
+- timestamps
+
+images (image)
+- id
+- file_id
+- image_detail_id
+- ...
+- timestamps
+
+image_details (image)
+- id
+- image_id
+- ...
+- timestamps
